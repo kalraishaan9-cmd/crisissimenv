@@ -1,0 +1,4 @@
+name: CrisisSim
+version: 1.0.0
+type: environment
+entrypoint: crisissim.env:CrisisSimEnv
