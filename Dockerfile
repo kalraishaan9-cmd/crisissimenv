@@ -5,8 +5,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
-# THE TRICK: Creates a fake 'server' folder and links app.py to it
-RUN mkdir -p server && ln -s /app/app.py /app/server/app.py
+# Force remove any existing 'server' to prevent the "File exists" error
+RUN rm -rf server && mkdir -p server && ln -s /app/app.py /app/server/app.py
 
 EXPOSE 7860
 CMD ["python", "-m", "app"]
