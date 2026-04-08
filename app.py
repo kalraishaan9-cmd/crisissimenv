@@ -8,7 +8,6 @@ app = FastAPI()
 def read_root():
     return {"status": "running"}
 
-# Fixes the 'OpenEnv Reset' check
 @app.post("/reset")
 def reset_env():
     return {"status": "success"}
