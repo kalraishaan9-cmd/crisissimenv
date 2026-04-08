@@ -5,22 +5,13 @@ build-backend = "setuptools.build-meta"
 [project]
 name = "crisissimenv"
 version = "0.1.0"
-description = "CrisisSim: Cyber-Incident Response Environment"
-readme = "README.md"
-requires-python = ">=3.10"
 dependencies = [
-    "fastapi",
-    "uvicorn",
-    "pydantic",
-    "openai",
-    "requests",
-    "pyyaml",
-    "python-multipart",
-    "openenv>=0.2.0"
+    "fastapi==0.109.0",
+    "uvicorn==0.27.0",
+    "pydantic==2.6.0",
+    "openai==1.12.0",
+    "openenv==0.1.13"
 ]
 
 [project.scripts]
 server = "app:app"
-
-[tool.setuptools]
-packages = ["."]
