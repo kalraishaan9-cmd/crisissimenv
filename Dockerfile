@@ -11,5 +11,5 @@ COPY . .
 
 EXPOSE 7860
 
-# This runs app.py and starts the server via the main function
+# Executes app.py and runs the main() function
 CMD ["python", "-m", "app"]
