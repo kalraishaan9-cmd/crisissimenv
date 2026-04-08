@@ -1,22 +1,36 @@
 {
     "phishing_scam": {
-        "scenario": "Multiple employees reported suspicious emails asking for login credentials.",
+        "scenario": "Multiple employees reported a suspicious email asking for payroll credentials. Three have clicked the link.",
         "keywords": [
+            "isolate",
             "reset",
-            "notify",
-            "block",
-            "mfa",
-            "isolate"
-        ]
+            "email",
+            "credentials",
+            "block"
+        ],
+        "difficulty": "easy"
     },
     "ransomware_outbreak": {
-        "scenario": "Servers in the finance department are encrypting files. A ransom note is visible.",
+        "scenario": "Servers in the Finance dept are showing encrypted file extensions. A readme.txt ransom note is visible.",
         "keywords": [
             "shutdown",
-            "segment",
             "backup",
+            "segment",
             "disconnect",
-            "decrypt"
-        ]
+            "incident response"
+        ],
+        "difficulty": "medium"
+    },
+    "exfiltration": {
+        "scenario": "Large data egress detected to an unknown IP in a foreign country. Admin accounts are being locked out.",
+        "keywords": [
+            "revoke",
+            "firewall",
+            "traffic analysis",
+            "api keys",
+            "forensics",
+            "honeypot"
+        ],
+        "difficulty": "hard"
     }
 }
