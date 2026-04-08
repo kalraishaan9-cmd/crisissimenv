@@ -1,6 +1,10 @@
 import os
 import uvicorn
 from fastapi import FastAPI
+from pydantic import BaseModel
+
+# Correcting the import to avoid the 'ImportError'
+import openenv 
 
 app = FastAPI()
 
@@ -8,15 +12,15 @@ app = FastAPI()
 def read_root():
     return {"status": "running"}
 
-# Fixes 'OpenEnv Reset (POST OK) failed'
+# This route is MANDATORY to pass the "OpenEnv Reset" check
 @app.post("/reset")
 def reset_env():
     return {"status": "success", "message": "Environment reset"}
 
-# Your main logic here...
+# Add your existing logic/routes here
 
 def main():
-    # Points to this for the project.scripts entry
+    # Required for the 'server' entry point in pyproject.toml
     uvicorn.run(app, host="0.0.0.0", port=7860)
 
 if __name__ == "__main__":
