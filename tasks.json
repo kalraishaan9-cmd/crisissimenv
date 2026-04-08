@@ -1,0 +1,22 @@
+{
+    "phishing_scam": {
+        "scenario": "Multiple employees reported suspicious emails asking for login credentials.",
+        "keywords": [
+            "reset",
+            "notify",
+            "block",
+            "mfa",
+            "isolate"
+        ]
+    },
+    "ransomware_outbreak": {
+        "scenario": "Servers in the finance department are encrypting files. A ransom note is visible.",
+        "keywords": [
+            "shutdown",
+            "segment",
+            "backup",
+            "disconnect",
+            "decrypt"
+        ]
+    }
+}

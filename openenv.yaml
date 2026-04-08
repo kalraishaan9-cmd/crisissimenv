@@ -1,0 +1,9 @@
+spec_version: 1
+name: CrisisSim
+type: container
+runtime: docker
+app: app:app
+port: 7860
+tasks:
+  - id: phishing_scam
+  - id: ransomware_outbreak
