@@ -1,23 +1,47 @@
+import os, asyncio, json
+from openai import OpenAI
+from models import CrisisAction
+# This assumes running against the local server for baseline
 import requests
-import os
 
-# Update this to your running Space URL
-ENV_URL = "https://thelabsters-crisissimenv.hf.space"
+API_KEY = os.getenv("HF_TOKEN")
+API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
+MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
+ENV_URL = "http://localhost:7860" # Default HF Space port
 
-def run_inference():
-    print("[START]")
-    # Reset environment
-    res = requests.post(f"{ENV_URL}/reset")
-    obs = res.json()
-    print(f"[STEP] Scenario: {obs['scenario']}")
+client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
 
-    # Mock Action
-    action = {"decision": "I will reset all user passwords and notify the IT team."}
-    res = requests.post(f"{ENV_URL}/step", json=action)
-    data = res.json()
+async def main():
+    task = os.getenv("TASK_ID", "phishing_scam")
+    print(f"[START] task={task} env=CrisisSim model={MODEL_NAME}")
     
-    print(f"[STEP] Reward: {data['reward']}")
-    print(f"[END] Final Score: {data['reward']}")
+    # Reset
+    res = requests.post(f"{ENV_URL}/reset").json()
+    obs = res
+    done = False
+    step_count = 0
+    rewards = []
+
+    while not done and step_count < 8:
+        step_count += 1
+        # Simple Agent Call
+        completion = client.chat.completions.create(
+            model=MODEL_NAME,
+            messages=[{"role": "user", "content": f"Crisis: {obs['scenario']}. Actions taken: {obs['history']}. What is your next single response action?"}]
+        )
+        action_text = completion.choices[0].message.content
+        
+        # Step
+        step_res = requests.post(f"{ENV_URL}/step", json={"decision": action_text}).json()
+        obs = step_res["observation"]
+        reward = step_res["reward"]
+        done = step_res["done"]
+        rewards.append(reward)
+
+        print(f"[STEP] step={step_count} action={action_text[:30]} reward={reward:.2f} done={str(done).lower()} error=null")
+
+    score = min(sum(rewards), 1.0)
+    print(f"[END] success={str(score > 0.5).lower()} steps={step_count} score={score:.2f} rewards={','.join([f'{r:.2f}' for r in rewards])}")
 
 if __name__ == "__main__":
-    run_inference()
+    asyncio.run(main())
