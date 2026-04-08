@@ -7,3 +7,4 @@ port: 7860
 tasks:
   - id: phishing_scam
   - id: ransomware_outbreak
+  - id: exfiltration
