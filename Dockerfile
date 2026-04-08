@@ -1,15 +1,12 @@
 FROM python:3.10-slim
-
 WORKDIR /app
-
 RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
-
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-
 COPY . .
 
-EXPOSE 7860
+# THE TRICK: Creates a fake 'server' folder and links app.py to it
+RUN mkdir -p server && ln -s /app/app.py /app/server/app.py
 
-# Executes app.py and runs the main() function
+EXPOSE 7860
 CMD ["python", "-m", "app"]
