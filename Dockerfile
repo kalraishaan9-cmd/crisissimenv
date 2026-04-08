@@ -11,5 +11,4 @@ COPY . .
 
 EXPOSE 7860
 
-# Runs app.py which triggers the if __name__ == "__main__": main() block
 CMD ["python", "-m", "app"]
