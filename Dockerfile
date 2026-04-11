@@ -5,7 +5,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
-# Force remove any existing 'server' to prevent the "File exists" error
+# Force-cleans the environment and satisfies the 'Missing server/app.py' check
 RUN rm -rf server && mkdir -p server && ln -s /app/app.py /app/server/app.py
 
 EXPOSE 7860
