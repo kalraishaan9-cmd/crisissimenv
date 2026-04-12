@@ -3,14 +3,13 @@ import asyncio
 import requests
 from openai import OpenAI
 
-# Environment configuration
+# Environment setup
 API_KEY = os.getenv("HF_TOKEN")
 API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
 MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
 ENV_URL = "http://localhost:7860" 
 
-# THE CRITICAL FIX: http_client=None ignores system-injected proxies
-# that cause the 'unexpected keyword argument proxies' crash
+# THE CRITICAL FIX: http_client=None bypasses the 'proxies' error
 client = OpenAI(
     base_url=API_BASE_URL, 
     api_key=API_KEY,
@@ -30,7 +29,7 @@ async def main():
             step_count += 1
             completion = client.chat.completions.create(
                 model=MODEL_NAME,
-                messages=[{"role": "user", "content": f"Context: {obs}. What is the next action?"}]
+                messages=[{"role": "user", "content": f"Crisis: {obs}. Next action?"}]
             )
             action = completion.choices[0].message.content
             
