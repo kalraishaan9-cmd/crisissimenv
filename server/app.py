@@ -9,13 +9,13 @@ class Action(BaseModel):
 
 @app.post("/reset")
 def reset():
-    return {"observation": "Environment reset. Waiting for agent action."}
+    return {"observation": "Mission Start. System Online."}
 
 @app.post("/step")
 def step(action: Action):
-    # Logic for Phase 3: Simple response to agent
+    # Logic for Phase 3 review: rewarding the agent for taking actions
     return {
-        "observation": f"Action received: {action.decision}",
+        "observation": f"Action '{action.decision}' executed.",
         "reward": 1.0,
         "done": False
     }
