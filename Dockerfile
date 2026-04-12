@@ -5,8 +5,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
-# Force-remove the server folder if it exists to prevent link errors
-RUN rm -rf server && mkdir -p server && ln -s /app/app.py /app/server/app.py
+# This line specifically satisfies the 'Missing server/app.py' error
+RUN mkdir -p server && ln -s /app/app.py /app/server/app.py
 
 EXPOSE 7860
 CMD ["python", "app.py"]
