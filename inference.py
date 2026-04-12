@@ -4,15 +4,15 @@ import requests
 import httpx
 from openai import OpenAI, DefaultHttpxClient
 
-# Setup environment variables
+# 1. Setup Environment from the Scaler dashboard
 API_KEY = os.getenv("HF_TOKEN")
 API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
 MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
 ENV_URL = "http://localhost:7860" 
 
-# THE CRITICAL FIX: 
-# trust_env=False tells the OpenAI client to ignore the 'proxies' settings 
-# that the validator is forcing into your code, stopping the TypeError crash.
+# 2. THE CRITICAL FIX: 
+# trust_env=False forces the client to ignore the 'proxies' settings 
+# that are currently crashing your Phase 2 run.
 client = OpenAI(
     base_url=API_BASE_URL, 
     api_key=API_KEY,
@@ -20,32 +20,32 @@ client = OpenAI(
 )
 
 async def main():
-    print("[START] Phase 2 validation beginning...")
+    print("[LOG] Aura Maxing: Starting Phase 2...")
     try:
-        # Reset simulation environment
+        # Reset the hackathon simulation environment
         requests.post(f"{ENV_URL}/reset")
         
-        obs = "Starting mission"
+        obs = "Initial state"
         done = False
-        steps = 0
         
-        while not done and steps < 10:
-            steps += 1
+        while not done:
+            # Get the next move from the LLM
             completion = client.chat.completions.create(
                 model=MODEL_NAME,
-                messages=[{"role": "user", "content": f"Task: Complete the mission. Status: {obs}"}]
+                messages=[{"role": "user", "content": f"Task: Complete the mission. Current: {obs}"}]
             )
             action = completion.choices[0].message.content
             
-            # Step the environment
+            # Send the action to the environment
             res = requests.post(f"{ENV_URL}/step", json={"decision": action}).json()
             obs = res.get("observation")
             done = res.get("done", False)
-            print(f"[STEP {steps}] Action: {action[:20]}... | Done: {done}")
+            
+            if done: break
 
-        print("[SUCCESS] Phase 2 complete. Submission ready.")
+        print("[SUCCESS] Mission complete.")
     except Exception as e:
-        print(f"[ERROR] Inference logic failed: {str(e)}")
+        print(f"[FAIL] Error encountered: {str(e)}")
 
 if __name__ == "__main__":
     asyncio.run(main())
