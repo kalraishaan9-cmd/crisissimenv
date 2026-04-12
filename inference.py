@@ -2,33 +2,31 @@ import os
 import requests
 from openai import OpenAI, DefaultHttpxClient
 
-# Setup
-API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
+# Use the Hugging Face Router
+API_BASE_URL = "https://router.huggingface.co/v1"
 API_KEY = os.getenv("HF_TOKEN")
-ENV_URL = "http://localhost:7860"
 
-# THE FIX: trust_env=False stops the 'proxies' keyword error
+# Fix for the 'proxies' TypeError in Phase 2
 client = OpenAI(
     base_url=API_BASE_URL,
     api_key=API_KEY,
-    http_client=DefaultHttpxClient(trust_env=False)
+    http_client=DefaultHttpxClient(trust_env=False) 
 )
 
 def run():
-    print("Starting Phase 2 Mission...")
-    # Reset
-    requests.post(f"{ENV_URL}/reset")
+    # 1. Reset Env
+    requests.post("http://localhost:7860/reset")
     
-    # Step: Send a simple prompt to the LLM
-    chat_completion = client.chat.completions.create(
+    # 2. Get LLM Decision
+    completion = client.chat.completions.create(
         model="Qwen/Qwen2.5-72B-Instruct",
-        messages=[{"role": "user", "content": "You are an agent in a simulation. Say 'I am ready'."}]
+        messages=[{"role": "user", "content": "Pick an action: 'explore' or 'rest'."}]
     )
-    decision = chat_completion.choices[0].message.content
-    
-    # Send decision to your OpenEnv
-    response = requests.post(f"{ENV_URL}/step", json={"decision": decision})
-    print(f"Env Response: {response.json()}")
+    decision = completion.choices[0].message.content
+
+    # 3. Step Env
+    response = requests.post("http://localhost:7860/step", json={"decision": decision})
+    print(f"Success: {response.json()}")
 
 if __name__ == "__main__":
     run()
