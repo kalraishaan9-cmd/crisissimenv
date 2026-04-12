@@ -1,26 +1,25 @@
+import uvicorn
 from fastapi import FastAPI
-from models import CrisisAction
+from pydantic import BaseModel
 from crisis_environment import CrisisEnvironment
-import os
 
 app = FastAPI()
+env = CrisisEnvironment()
 
-task_id = os.getenv("TASK_ID", "phishing_scam")
-env = CrisisEnvironment(task_id=task_id)
-
-@app.get("/")
-def read_root():
-    return {"status": "CrisisSim API is Running", "task": task_id}
+class ActionRequest(BaseModel):
+    action: dict
 
 @app.post("/reset")
 def reset():
-    return env.reset()
+    return {"state": env.reset()}
 
 @app.post("/step")
-def step(action: CrisisAction):
-    obs, reward, done, info = env.step(action)
-    return {"observation": obs, "reward": reward, "done": done, "info": info}
+def step(request: ActionRequest):
+    state, reward, done, info = env.step(request.action)
+    return {"state": state, "reward": reward, "done": done, "info": info}
 
-@app.get("/state")
-def state():
-    return env.state()
+def main():
+    uvicorn.run(app, host="0.0.0.0", port=7860)
+
+if __name__ == "__main__":
+    main()
