@@ -1,7 +1,5 @@
 fastapi
 uvicorn
 requests
-pydantic
-openai>=1.0.0
-httpx>=0.25.0
-openenv>=0.1.13
+openai
+openenv==0.1.13
