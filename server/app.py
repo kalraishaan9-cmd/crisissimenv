@@ -13,7 +13,6 @@ def reset():
 
 @app.post("/step")
 def step(data: dict):
-    # Basic logic to keep the agent moving
     return {
         "observation": {"scenario": "Continuing crisis", "history": ["Action taken"]},
         "reward": 0.5,
