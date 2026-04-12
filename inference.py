@@ -10,7 +10,8 @@ API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
 MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
 ENV_URL = "http://localhost:7860" 
 
-# THE FIX: http_client=None ignores the 'proxies' argument crashing your build
+# THE CRITICAL FIX:
+# Use http_client=None to prevent the 'proxies' TypeError crash.
 client = OpenAI(
     base_url=API_BASE_URL, 
     api_key=API_KEY,
