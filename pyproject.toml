@@ -1,17 +1,19 @@
 [project]
 name = "crisissimenv"
 version = "0.1.0"
+description = "Crisis Simulation Environment for OpenEnv"
 dependencies = [
     "fastapi",
     "uvicorn",
     "requests",
     "openai",
     "pydantic",
-    "openenv>=0.1.13"
+    "openenv==0.1.13"
 ]
 
 [project.scripts]
-server = "app:main"
+# This tells the validator exactly where the main function is
+server = "server.app:main"
 
 [build-system]
 requires = ["setuptools>=61.0"]
