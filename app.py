@@ -19,7 +19,6 @@ def step(request: ActionRequest):
     return {"state": state, "reward": reward, "done": done, "info": info}
 
 def main():
-    # Validator requires this to be callable
     uvicorn.run(app, host="0.0.0.0", port=7860)
 
 if __name__ == "__main__":
