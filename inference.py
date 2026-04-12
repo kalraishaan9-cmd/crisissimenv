@@ -1,45 +1,34 @@
 import os
-import asyncio
 import requests
 from openai import OpenAI, DefaultHttpxClient
 
-# Constants
+# Setup
 API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
 API_KEY = os.getenv("HF_TOKEN")
-MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
 ENV_URL = "http://localhost:7860"
 
-# THE PHASE 2 KILLER: trust_env=False prevents the 'proxies' TypeError
+# THE FIX: trust_env=False stops the 'proxies' keyword error
 client = OpenAI(
     base_url=API_BASE_URL,
     api_key=API_KEY,
     http_client=DefaultHttpxClient(trust_env=False)
 )
 
-async def run_mission():
-    print("[PHASE 2] Starting Mission...")
-    try:
-        # Reset Env
-        obs = requests.post(f"{ENV_URL}/reset").json()["observation"]
-        done = False
-        
-        while not done:
-            # Agent decides
-            response = client.chat.completions.create(
-                model=MODEL_NAME,
-                messages=[{"role": "user", "content": f"Env Obs: {obs}. What is your next move? Reply with 'finish' to end."}]
-            )
-            action = response.choices[0].message.content
-            
-            # Env steps
-            res = requests.post(f"{ENV_URL}/step", json={"decision": action}).json()
-            obs = res["observation"]
-            done = res["done"]
-            print(f"Agent Action: {action[:30]}... | Done: {done}")
-
-        print("[SUCCESS] Phase 2 Cleared.")
-    except Exception as e:
-        print(f"[FAIL] Phase 2 Error: {e}")
+def run():
+    print("Starting Phase 2 Mission...")
+    # Reset
+    requests.post(f"{ENV_URL}/reset")
+    
+    # Step: Send a simple prompt to the LLM
+    chat_completion = client.chat.completions.create(
+        model="Qwen/Qwen2.5-72B-Instruct",
+        messages=[{"role": "user", "content": "You are an agent in a simulation. Say 'I am ready'."}]
+    )
+    decision = chat_completion.choices[0].message.content
+    
+    # Send decision to your OpenEnv
+    response = requests.post(f"{ENV_URL}/step", json={"decision": decision})
+    print(f"Env Response: {response.json()}")
 
 if __name__ == "__main__":
-    asyncio.run(run_mission())
+    run()
