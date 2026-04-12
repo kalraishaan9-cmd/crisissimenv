@@ -7,7 +7,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# This link is the "JS fix" for the Missing server/app.py error
+# Creates the virtual folder the validator requires
 RUN rm -rf server && mkdir -p server && ln -s /app/app.py /app/server/app.py
 
 EXPOSE 7860
