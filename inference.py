@@ -2,7 +2,7 @@ import os
 import requests
 from openai import OpenAI, DefaultHttpxClient
 
-# trust_env=False bypasses the buggy proxy settings in Phase 2
+# trust_env=False is the required fix for the proxy crash
 client = OpenAI(
     base_url="https://router.huggingface.co/v1",
     api_key=os.getenv("HF_TOKEN"),
@@ -10,11 +10,16 @@ client = OpenAI(
 )
 
 def run():
+    # Reset env
     requests.post("http://localhost:7860/reset")
+    
+    # Get AI action
     completion = client.chat.completions.create(
         model="Qwen/Qwen2.5-72B-Instruct",
-        messages=[{"role": "user", "content": "Analyze and act."}]
+        messages=[{"role": "user", "content": "Analyze and take action."}]
     )
+    
+    # Step env
     requests.post("http://localhost:7860/step", json={"action": {"decision": completion.choices[0].message.content}})
 
 if __name__ == "__main__":
