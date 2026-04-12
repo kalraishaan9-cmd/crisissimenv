@@ -4,14 +4,12 @@ import json
 import requests
 from openai import OpenAI
 
-# Environment configuration
 API_KEY = os.getenv("HF_TOKEN")
 API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
 MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
 ENV_URL = "http://localhost:7860" 
 
-# THE CRITICAL FIX:
-# Use http_client=None to prevent the 'proxies' TypeError crash.
+# THE FIX: This ignores the 'proxies' argument that causes the crash
 client = OpenAI(
     base_url=API_BASE_URL, 
     api_key=API_KEY,
@@ -23,7 +21,7 @@ async def main():
     print(f"[START] task={task} env=CrisisSim model={MODEL_NAME}")
     
     try:
-        # Reset the environment
+        # Reset
         res = requests.post(f"{ENV_URL}/reset").json()
         obs = res
         done = False
@@ -32,14 +30,13 @@ async def main():
 
         while not done and step_count < 8:
             step_count += 1
-            
             completion = client.chat.completions.create(
                 model=MODEL_NAME,
                 messages=[{"role": "user", "content": f"Crisis: {obs.get('scenario', '')}. Actions: {obs.get('history', '')}. Next action?"}]
             )
             action_text = completion.choices[0].message.content
             
-            # Step the environment
+            # Step
             step_res = requests.post(f"{ENV_URL}/step", json={"decision": action_text}).json()
             obs = step_res["observation"]
             reward = step_res["reward"]
@@ -52,7 +49,7 @@ async def main():
         print(f"[END] success={str(score > 0.5).lower()} steps={step_count} score={score:.2f}")
         
     except Exception as e:
-        print(f"[ERROR] Inference failed: {str(e)}")
+        print(f"[ERROR] {str(e)}")
 
 if __name__ == "__main__":
     asyncio.run(main())
