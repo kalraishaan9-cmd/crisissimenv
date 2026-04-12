@@ -1,14 +1,18 @@
 FROM python:3.10-slim
+
 WORKDIR /app
+
+# Install system dependencies
 RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
+# Copy your files into the container
 COPY . .
 
-# Creates the virtual folder the validator requires
-RUN rm -rf server && mkdir -p server && ln -s /app/app.py /app/server/app.py
+# Install the exact working version of openenv to avoid build crashes
+RUN pip install --no-cache-dir fastapi uvicorn requests openai openenv==0.1.13
 
+# Expose the internal port for the validator
 EXPOSE 7860
-CMD ["python", "app.py"]
+
+# Run the app from the server folder
+CMD ["python", "server/app.py"]
